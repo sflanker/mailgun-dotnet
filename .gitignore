@@ -232,3 +232,6 @@ __pycache__/
 *.btm.cs
 *.odx.cs
 *.xsd.cs
+
+# Configuration files
+Mailgun.Tests/config/appsettings.*.json

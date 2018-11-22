@@ -1,6 +1,6 @@
 ﻿using Mailgun.Extensions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Should;
+using Shouldly;
 
 namespace Mailgun.Tests.Extensions
 {
@@ -11,14 +11,14 @@ namespace Mailgun.Tests.Extensions
         public void TestBooleanNo()
         {
             const bool yesNo = false;
-            yesNo.AsYesNo().ShouldEqual("no");
+            yesNo.AsYesNo().ShouldBe("no");
         }
 
         [TestMethod]
         public void TestBooleanYes()
         {
             const bool yesNo = true;
-            yesNo.AsYesNo().ShouldEqual("yes");
+            yesNo.AsYesNo().ShouldBe("yes");
         }
     }
 }

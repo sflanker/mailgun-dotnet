@@ -2,7 +2,7 @@
 using System.Collections.ObjectModel;
 using Mailgun.Extensions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Should;
+using Shouldly;
 
 namespace Mailgun.Tests.Extensions
 {
@@ -21,11 +21,11 @@ namespace Mailgun.Tests.Extensions
             dict.AddIfNotNullOrEmpty("", string.Empty);
 
 
-            dict.Count.ShouldEqual(0);
+            dict.Count.ShouldBe(0);
 
             dict.AddIfNotNullOrEmpty("test", "test");
 
-            dict.Count.ShouldEqual(1);
+            dict.Count.ShouldBe(1);
         }
     }
 }

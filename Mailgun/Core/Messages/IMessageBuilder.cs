@@ -152,7 +152,7 @@ namespace Mailgun.Core.Messages
         /// <param name="dateTime">The delivery time</param>
         /// <param name="zone">The target timezone. (Optional)</param>
         /// <returns></returns>
-        IMessageBuilder SetDeliveryTime(DateTime dateTime, TimeZone zone = null);
+        IMessageBuilder SetDeliveryTime(DateTime dateTime, TimeZoneInfo zone = null);
 
         /// <summary>
         /// Add a custom array of data to the mail message

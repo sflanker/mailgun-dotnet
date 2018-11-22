@@ -7,8 +7,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mailgun", "Mailgun\Mailgun.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mailgun.Tests", "Mailgun.Tests\Mailgun.Tests.csproj", "{948532EB-AB41-4B70-BD46-64843B12B86C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mailgun.AspNet.Identity", "Mailgun.AspNet.Identity\Mailgun.AspNet.Identity.csproj", "{6E4586E9-3CA6-47D2-858C-2C9985E46EBC}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,10 +21,6 @@ Global
 		{948532EB-AB41-4B70-BD46-64843B12B86C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{948532EB-AB41-4B70-BD46-64843B12B86C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{948532EB-AB41-4B70-BD46-64843B12B86C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6E4586E9-3CA6-47D2-858C-2C9985E46EBC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6E4586E9-3CA6-47D2-858C-2C9985E46EBC}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6E4586E9-3CA6-47D2-858C-2C9985E46EBC}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6E4586E9-3CA6-47D2-858C-2C9985E46EBC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

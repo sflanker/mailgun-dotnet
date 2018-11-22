@@ -1,0 +1,6 @@
+{
+  "MailGun": {
+    "Domain": "${MAILGUN_DOMAIN}",
+    "ApiKey": "${MAILGUN_API_KEY}"
+  }
+}

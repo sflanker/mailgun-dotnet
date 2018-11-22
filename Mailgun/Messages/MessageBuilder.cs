@@ -280,9 +280,12 @@ namespace Mailgun.Messages
         }
 
 
-        public IMessageBuilder SetDeliveryTime(DateTime dateTime, TimeZone zone = null)
+        public IMessageBuilder SetDeliveryTime(DateTime dateTime, TimeZoneInfo zone = null)
         {
-            _message.DeliveryTime = zone == null ? dateTime.ToUniversalTime() : zone.ToUniversalTime(dateTime);
+            _message.DeliveryTime =
+                zone == null ?
+                    dateTime.ToUniversalTime() :
+                    TimeZoneInfo.ConvertTimeToUtc(dateTime, zone);
             return this;
         }
 

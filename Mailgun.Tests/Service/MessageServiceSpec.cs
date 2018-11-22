@@ -4,26 +4,39 @@ using System.Threading.Tasks;
 using Mailgun.Exceptions;
 using Mailgun.Messages;
 using Mailgun.Service;
+using Mailgun.Tests.Configuration;
+using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json.Linq;
-using Should;
+using Shouldly;
 
 namespace Mailgun.Tests.Service
 {
     [TestClass]
     public class MessageServiceSpec
     {
-        //TODO: move api keys to .config files
-        private const string ApiKey = "[apikeyHere]";
-        private const string Domain = "sandbox9adbe277a51a430daeb12aaa652af7f1.mailgun.org";
+        private string Domain { get; }
+        private string ApiKey { get; }
+        private string RecipientDomain { get; }
+        private string TestSender { get; }
+
+        public MessageServiceSpec() {
+            var config = new MailgunConfiguration();
+            ConfigurationHelper.Root.GetSection("Mailgun").Bind(config);
+
+            this.Domain = config.Domain;
+            this.ApiKey = config.ApiKey;
+            this.RecipientDomain = config.RecipientDomain;
+            this.TestSender = config.TestSender;
+        }
 
         [TestMethod]
         public void TestDefaults()
         {
             var mg = new MessageService(ApiKey, true,"api.mailgun.net/v3");
-            mg.ApiKey.ShouldEqual(ApiKey);
+            mg.ApiKey.ShouldBe(ApiKey);
             mg.UseSSl.ShouldBeTrue();
-            mg.BaseAddress.ShouldEqual("api.mailgun.net/v3");
+            mg.BaseAddress.ShouldBe("api.mailgun.net/v3");
         }
 
         [TestMethod]
@@ -35,7 +48,7 @@ namespace Mailgun.Tests.Service
             var builder = new MessageBuilder()
                 .SetTestMode(true)
                 .SetSubject("Plain text test")
-                .SetFromAddress(new Recipient {Email = "bringking@gmail.com", DisplayName = "Mailgun C#"})
+                .SetFromAddress(new Recipient {Email = this.TestSender, DisplayName = "Mailgun C#"})
                 .SetTextBody("This is a test");
 
             //add 1000 users
@@ -57,12 +70,12 @@ namespace Mailgun.Tests.Service
             var message = new MessageBuilder()
                 .AddToRecipient(new Recipient
                 {
-                    Email = "bringking@gmail.com",
-                    DisplayName = "Charlie King"
+                    Email = this.TestSender,
+                    DisplayName = "Mailgun C#"
                 })
                 .SetTestMode(true)
                 .SetSubject("Plain text test")
-                .SetFromAddress(new Recipient {Email = "bringking@gmail.com", DisplayName = "Mailgun C#"})
+                .SetFromAddress(new Recipient {Email = this.TestSender, DisplayName = "Mailgun C#"})
                 .SetTextBody("This is a test")
                 .GetMessage();
 
@@ -71,26 +84,26 @@ namespace Mailgun.Tests.Service
         }
 
         [TestMethod]
-        public async Task TestParseSimple() => await TestEmailParsing("", "devs@mailgun.net");
+        public async Task TestParseSimple() => await TestEmailParsing("", $"test@{this.RecipientDomain}");
 
         [TestMethod]
-        public async Task TestWithDisplayName() => await TestEmailParsing("Dasha Dasha", "dashaxxx@example.com");
+        public async Task TestWithDisplayName() => await TestEmailParsing("Test User", $"test@{this.RecipientDomain}");
 
         [TestMethod]
-        public async Task TestWithBrackets() => await TestEmailParsing("Dasha (and thats all)", "dashaxxx@example.com");
+        public async Task TestWithBrackets() => await TestEmailParsing("Test (and thats all)", $"test@{this.RecipientDomain}");
 
         [TestMethod, ExpectedException(typeof(InvalidEmailException))]
-        public async Task TestWithDot() => await TestEmailParsing("Dasha", "dashaxxx.@example.com");
+        public async Task TestWithDot() => await TestEmailParsing("Test", $"test.@{this.RecipientDomain}");
 
         [TestMethod, ExpectedException(typeof(InvalidEmailException))]
-        public async Task TestWithoutAt() => await TestEmailParsing("Dasha", "dashaxxx");
+        public async Task TestWithoutAt() => await TestEmailParsing("Test", "test");
 
         [TestMethod]
-        public async Task TestWithQuotes() => await TestEmailParsing("\"Jonh Smith \"JSmith\"", "joesmith@example.com");
+        public async Task TestWithQuotes() => await TestEmailParsing("\"Test User \"TUser\"", $"test@{this.RecipientDomain}");
 
-        private static async Task TestEmailParsing(string displayName, string email)
+        private async Task TestEmailParsing(string displayName, string email)
         {
-            var mg = new MessageService(ApiKey);
+            var mg = new MessageService(this.ApiKey);
             //build a message
             var message = new MessageBuilder()
                 .AddToRecipient(new Recipient
@@ -104,7 +117,7 @@ namespace Mailgun.Tests.Service
                 .SetTextBody("This is a test")
                 .GetMessage();
 
-            var content = await mg.SendMessageAsync(Domain, message);
+            var content = await mg.SendMessageAsync(this.Domain, message);
             content.ShouldNotBeNull();
             content.IsSuccessStatusCode.ShouldBeTrue(
                 $"Email: {email}, DisplayName: {displayName}, Status code: {content.StatusCode}, Content: {await content.Content.ReadAsStringAsync()}");
@@ -119,12 +132,12 @@ namespace Mailgun.Tests.Service
             var message = new MessageBuilder()
                 .AddToRecipient(new Recipient
                 {
-                    Email = "bringking@gmail.com",
-                    DisplayName = "Charlie King"
+                    Email = this.TestSender,
+                    DisplayName = "Mailgun C#"
                 })
                 .SetTestMode(true)
                 .SetSubject("Html test")
-                .SetFromAddress(new Recipient {Email = "bringking@gmail.com", DisplayName = "Mailgun C#"})
+                .SetFromAddress(new Recipient {Email = this.TestSender, DisplayName = "Mailgun C#"})
                 .SetHtmlBody("<html><h1>Hello from the Mailgun C# library</h1></html>")
                 .GetMessage();
 
@@ -141,12 +154,12 @@ namespace Mailgun.Tests.Service
             var message = new MessageBuilder()
                 .AddToRecipient(new Recipient
                 {
-                    Email = "bringking@gmail.com",
-                    DisplayName = "Charlie King"
+                    Email = this.TestSender,
+                    DisplayName = "Mailgun C#"
                 })
                 .SetTestMode(true)
                 .SetSubject("Attachment test")
-                .SetFromAddress(new Recipient {Email = "bringking@gmail.com", DisplayName = "Mailgun C#"})
+                .SetFromAddress(new Recipient {Email = this.TestSender, DisplayName = "Mailgun C#"})
                 .SetHtmlBody("<html><h1>I have an attachment</h1></html>")
                 .AddAttachment(new FileInfo(Consts.PictureFileName))
                 .GetMessage();
@@ -164,12 +177,12 @@ namespace Mailgun.Tests.Service
             var message = new MessageBuilder()
                 .AddToRecipient(new Recipient
                 {
-                    Email = "bringking@gmail.com",
-                    DisplayName = "Charlie King"
+                    Email = this.TestSender,
+                    DisplayName = "Mailgun C#"
                 })
                 .SetTestMode(true)
                 .SetSubject("Inline image test")
-                .SetFromAddress(new Recipient {Email = "bringking@gmail.com", DisplayName = "Mailgun C#"})
+                .SetFromAddress(new Recipient {Email = this.TestSender, DisplayName = "Mailgun C#"})
                 .SetHtmlBody("<html>Inline image here: <img src=\"cid:Desert.jpg\"></html>")
                 .AddInlineImage(new FileInfo(Consts.PictureFileName))
                 .GetMessage();
@@ -189,8 +202,8 @@ namespace Mailgun.Tests.Service
                 .SetTestMode(true)
                 .AddToRecipient(new Recipient
                 {
-                    Email = "bringking@gmail.com",
-                    DisplayName = "Charlie King"
+                    Email = this.TestSender,
+                    DisplayName = "Mailgun C#"
                 })
                 .AddCcRecipient(new Recipient
                 {
@@ -217,7 +230,7 @@ namespace Mailgun.Tests.Service
                 .SetOpenTracking(true)
                 .SetDeliveryTime(DateTime.Now + TimeSpan.FromDays(1))
                 .SetSubject("Kitchen Sink")
-                .SetFromAddress(new Recipient {Email = "bringking@gmail.com", DisplayName = "Mailgun C#"})
+                .SetFromAddress(new Recipient {Email = this.TestSender, DisplayName = "Mailgun C#"})
                 .SetTextBody("This is the text body")
                 .SetHtmlBody("<html>Inline image here: <img src=\"cid:Desert.jpg\"></html>")
                 .AddInlineImage(new FileInfo(picturesDesert))

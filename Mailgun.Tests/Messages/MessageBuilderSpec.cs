@@ -1,7 +1,7 @@
 ﻿using Mailgun.Messages;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json.Linq;
-using Should;
+using Shouldly;
 
 namespace Mailgun.Tests.Messages
 {
@@ -14,12 +14,12 @@ namespace Mailgun.Tests.Messages
             var builder = new MessageBuilder();
 
             var message =
-                builder.AddToRecipient(new Recipient {DisplayName = "Charles King", Email = "bringking@gmail.com"},
+                builder.AddToRecipient(new Recipient {DisplayName = "Mailgun C#", Email = "test@host.com"},
                     JObject.Parse("{\"id\":\"123\"}"))
                     .GetMessage();
 
             message.RecipientVariables.ShouldNotBeNull();
-            message.RecipientVariables["bringking@gmail.com"].ShouldNotBeNull();
+            message.RecipientVariables["test@host.com"].ShouldNotBeNull();
         }
     }
 }
